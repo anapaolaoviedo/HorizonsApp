@@ -35,6 +35,7 @@ El proyecto está construido como un ecosistema de **microservicios en Python (F
 
 - Microservicio independiente en **FastAPI** (puerto `8010`).
 - Expone un endpoint `/webhook` para recibir mensajes desde SwiftUI.
+- Todo el codigo de BRAIN se encuentra en el repositorio https://github.com/anapaolaoviedo/alia_brain_microservice ya que es un microservicio externo y adaptado 
 - Diseñado como un **agente basado en modelos** (model-based agent):
 
 ### 🧠 Arquitectura del agente
