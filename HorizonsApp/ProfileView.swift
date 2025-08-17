@@ -96,7 +96,7 @@ struct ProfileView: View {
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("¡Hola, \(viewModel.user?.username ?? "Usuario")!")
+                    Text("¡Hola, \(viewModel.user?.username ?? "Ellucian")!")
                         .font(.headline.bold())
                         .foregroundColor(.white)
 
