@@ -6,7 +6,12 @@ struct ProfileView: View {
     @State private var selectedTab: ProfileTab = .dashboard
     @State private var showingLogoutAlert = false
     @State private var showingMUNGame = false
+    @State private var showingDesignLabGame = false  // 👈 NEW STATE FOR DESIGN LAB
     @State private var goToChat = false   // 👈 navigation trigger
+    
+    // 👈 ADD THESE NEW STATE VARIABLES FOR CAREER NAVIGATION
+    @State private var selectedCareer: CareerDetail?
+    @State private var showingCareerDetail = false
 
     var body: some View {
         NavigationStack {
@@ -43,6 +48,11 @@ struct ProfileView: View {
             .navigationDestination(isPresented: $goToChat) {   // 👈 destination for chat
                 ChatScreen()
             }
+            .navigationDestination(isPresented: $showingCareerDetail) {   // 👈 ADD THIS NEW DESTINATION
+                if let career = selectedCareer {
+                    CareerDetailView(career: career)
+                }
+            }
             .toolbar(.hidden, for: .navigationBar)  // replaces .navigationBarHidden in NavigationStack
         }
         .onAppear { viewModel.loadUserData() }
@@ -55,6 +65,9 @@ struct ProfileView: View {
         } message: { Text("¿Estás seguro que quieres cerrar sesión?") }
         .sheet(isPresented: $showingMUNGame) {
             MUNGameView()
+        }
+        .sheet(isPresented: $showingDesignLabGame) {  // 👈 NEW SHEET FOR DESIGN LAB
+            DesignLabGameView()
         }
     }
 
@@ -326,7 +339,7 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Resources Content
+    // MARK: - Resources Content (UPDATED WITH NAVIGATION)
     private var resourcesContent: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -342,16 +355,103 @@ struct ProfileView: View {
                 }
                 .padding(.top, 20)
 
-                // Career categories
+                // Career categories - 👈 UPDATED WITH NAVIGATION CLOSURES
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
-                    CareerCard(icon: "stethoscope", title: "Medicina", subtitle: "Ciencias de la Salud", color: .red,   courses: 12)
-                    CareerCard(icon: "scale.3d",    title: "Derecho",  subtitle: "Justicia y Leyes",       color: .blue,  courses: 8)
-                    CareerCard(icon: "paintbrush.fill", title: "Diseño", subtitle: "Arte y Creatividad", color: .purple, courses: 15)
-                    CareerCard(icon: "laptopcomputer",  title: "Tecnología", subtitle: "Innovación Digital", color: .pink, courses: 20)
-                    CareerCard(icon: "building.columns.fill", title: "Negocios", subtitle: "Emprendimiento", color: .orange, courses: 10)
-                    CareerCard(icon: "globe.americas.fill", title: "Rel. Int.", subtitle: "Diplomacia", color: .mint, courses: 6)
-                    CareerCard(icon: "scale.3d", title: "Ingenierias y Ciencias", subtitle: "Construcción y desarrollo ", color: .green, courses: 7)
-                    CareerCard(icon: "book", title: "Humanidades", subtitle: "Literatura y Filosofía", color: .yellow, courses: 7)
+                    CareerCard(
+                        icon: "stethoscope",
+                        title: "Medicina",
+                        subtitle: "Ciencias de la Salud",
+                        color: .red,
+                        courses: 12,
+                        onTap: {
+                            selectedCareer = CareerDetail.medicina
+                            showingCareerDetail = true
+                        }
+                    )
+                    
+                    CareerCard(
+                        icon: "scale.3d",
+                        title: "Derecho",
+                        subtitle: "Justicia y Leyes",
+                        color: .blue,
+                        courses: 8,
+                        onTap: {
+                            selectedCareer = CareerDetail.derecho
+                            showingCareerDetail = true
+                        }
+                    )
+                    
+                    CareerCard(
+                        icon: "paintbrush.fill",
+                        title: "Diseño",
+                        subtitle: "Arte y Creatividad",
+                        color: .purple,
+                        courses: 15,
+                        onTap: {
+                            selectedCareer = CareerDetail.diseno
+                            showingCareerDetail = true
+                        }
+                    )
+                    
+                    CareerCard(
+                        icon: "laptopcomputer",
+                        title: "Tecnología",
+                        subtitle: "Innovación Digital",
+                        color: .pink,
+                        courses: 20,
+                        onTap: {
+                            selectedCareer = CareerDetail.tecnologia
+                            showingCareerDetail = true
+                        }
+                    )
+                    
+                    CareerCard(
+                        icon: "building.columns.fill",
+                        title: "Negocios",
+                        subtitle: "Emprendimiento",
+                        color: .orange,
+                        courses: 10,
+                        onTap: {
+                            selectedCareer = CareerDetail.negocios
+                            showingCareerDetail = true
+                        }
+                    )
+                    
+                    CareerCard(
+                        icon: "globe.americas.fill",
+                        title: "Rel. Int.",
+                        subtitle: "Diplomacia",
+                        color: .mint,
+                        courses: 6,
+                        onTap: {
+                            selectedCareer = CareerDetail.relacionesInternacionales
+                            showingCareerDetail = true
+                        }
+                    )
+                    
+                    CareerCard(
+                        icon: "gearshape.fill",
+                        title: "Ingenierías",
+                        subtitle: "Construcción y desarrollo",
+                        color: .green,
+                        courses: 7,
+                        onTap: {
+                            selectedCareer = CareerDetail.ingenieria
+                            showingCareerDetail = true
+                        }
+                    )
+                    
+                    CareerCard(
+                        icon: "book",
+                        title: "Humanidades",
+                        subtitle: "Literatura y Filosofía",
+                        color: .yellow,
+                        courses: 7,
+                        onTap: {
+                            selectedCareer = CareerDetail.humanidades
+                            showingCareerDetail = true
+                        }
+                    )
                 }
 
                 Spacer(minLength: 100)
@@ -360,7 +460,7 @@ struct ProfileView: View {
         }
     }
 
-    // MARK: - Games Content
+    // MARK: - Games Content (UPDATED WITH DESIGN LAB GAME)
     private var gamesContent: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -376,7 +476,7 @@ struct ProfileView: View {
                 }
                 .padding(.top, 20)
 
-                // Featured game
+                // Featured games (UPDATED)
                 VStack(spacing: 16) {
                     FeaturedGameCard(
                         title: "MUN Simulator",
@@ -387,6 +487,18 @@ struct ProfileView: View {
                         duration: "15 min",
                         players: "1.2k jugadores",
                         showingMUNGame: $showingMUNGame
+                    )
+                    
+                    // 👈 NEW DESIGN LAB GAME CARD
+                    FeaturedDesignGameCard(
+                        title: "Design Lab",
+                        subtitle: "Arte y Creatividad",
+                        description: "Sumérgete en desafíos de diseño real. Descubre tu potencial creativo, dominio técnico y sensibilidad estética a través de proyectos prácticos.",
+                        icon: "paintpalette.fill",
+                        difficulty: "Principiante",
+                        duration: "12 min",
+                        players: "850 jugadores",
+                        showingDesignLabGame: $showingDesignLabGame
                     )
 
                     // Coming soon
@@ -633,12 +745,14 @@ struct SocratFeatureCard: View {
     }
 }
 
+// 👈 UPDATED CAREERCARD WITH ONTAP CLOSURE
 struct CareerCard: View {
     let icon: String
     let title: String
     let subtitle: String
     let color: Color
     let courses: Int
+    let onTap: () -> Void   // 👈 ADD THIS CLOSURE
 
     var body: some View {
         VStack(spacing: 12) {
@@ -666,7 +780,7 @@ struct CareerCard: View {
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         .onTapGesture {
-            // TODO: Navigate to career
+            onTap()   // 👈 CALL THE CLOSURE
         }
     }
 }
@@ -740,6 +854,89 @@ struct FeaturedGameCard: View {
                     .padding(.vertical, 16)
                     .background(
                         LinearGradient(colors: [.blue, .purple],
+                                       startPoint: .leading,
+                                       endPoint: .trailing)
+                    )
+                    .cornerRadius(12)
+            }
+        }
+        .padding()
+        .background(Color.white.opacity(0.9))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+    }
+}
+
+// 👈 NEW DESIGN LAB FEATURED GAME CARD
+struct FeaturedDesignGameCard: View {
+    let title: String
+    let subtitle: String
+    let description: String
+    let icon: String
+    let difficulty: String
+    let duration: String
+    let players: String
+    @Binding var showingDesignLabGame: Bool
+
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.title)
+                    .foregroundColor(.purple)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(title)
+                            .font(.title2.bold())
+                            .foregroundColor(.horizonLicorice)
+
+                        Text("NUEVO")
+                            .font(.caption2.bold())
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.purple)
+                            .cornerRadius(4)
+                    }
+
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundColor(.purple)
+                }
+
+                Spacer()
+            }
+
+            Text(description)
+                .font(.callout)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.leading)
+
+            HStack {
+                Label(difficulty, systemImage: "star.fill")
+                    .font(.caption)
+                    .foregroundColor(.green)
+
+                Label(duration, systemImage: "clock.fill")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Spacer()
+
+                Text(players)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Button(action: { showingDesignLabGame = true }) {
+                Text("🎨 Crear Ahora")
+                    .font(.headline.bold())
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(
+                        LinearGradient(colors: [.pink, .purple],
                                        startPoint: .leading,
                                        endPoint: .trailing)
                     )
@@ -882,6 +1079,305 @@ extension Color {
     static let horizonLime = Color.green
     static let horizonBlue = Color.blue
     static let horizonLicorice = Color.black
+}
+
+// 👈 ADD THESE SAMPLE CAREER DETAIL EXTENSIONS
+extension CareerDetail {
+    static let medicina = CareerDetail(
+        title: "Medicina",
+        subtitle: "Ciencias de la Salud",
+        icon: "stethoscope",
+        color: .red,
+        description: "La medicina se dedica al diagnóstico, tratamiento y prevención de enfermedades. Los médicos trabajan para mejorar la calidad de vida de las personas mediante la atención médica integral.",
+        averageSalary: "$50,000-150,000 MXN/mes",
+        jobGrowth: "+8% crecimiento",
+        mainAreas: ["Medicina General", "Especialidades Médicas", "Cirugía", "Investigación Médica", "Medicina Preventiva"],
+        dailyActivities: ["Consultar pacientes", "Realizar diagnósticos", "Prescribir tratamientos", "Realizar procedimientos", "Actualizar expedientes"],
+        workEnvironments: ["Hospitales", "Clínicas", "Consultorios privados", "Centros de investigación"],
+        personalityTraits: ["Empatía", "Precisión", "Resistencia al estrés", "Capacidad de decisión", "Ética profesional"],
+        hardSkills: [
+            Skill(name: "Anatomía y Fisiología", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Diagnóstico Clínico", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Farmacología", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        softSkills: [
+            Skill(name: "Empatía", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Comunicación", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Trabajo bajo presión", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        skillDevelopment: [
+            SkillDevelopment(title: "Práctica clínica", description: "Experiencia directa con pacientes", methods: ["Residencia", "Rotaciones"])
+        ],
+        academicPath: [
+            AcademicStep(title: "Licenciatura en Medicina", description: "6 años de estudio médico integral", duration: "6 años")
+        ],
+        careerProgression: [
+            CareerStage(title: "Médico General", description: "Práctica médica general", salaryRange: "$30,000-50,000", responsibilities: ["Consultas generales"])
+        ],
+        recommendedCourses: [
+            Course(title: "Anatomía Básica", provider: "UNAM", duration: "3 meses", level: "Básico", isFree: true)
+        ],
+        recommendedBooks: [
+            Book(title: "Gray's Anatomy", author: "Henry Gray", description: "Texto clásico de anatomía humana")
+        ],
+        professionalOrgs: [
+            ProfessionalOrganization(name: "Colegio Médico", description: "Asociación médica nacional", benefits: ["Certificación"])
+        ]
+    )
+    
+    
+    
+    static let diseno = CareerDetail(
+        title: "Diseño",
+        subtitle: "Arte y Creatividad",
+        icon: "paintbrush.fill",
+        color: .purple,
+        description: "El diseño combina creatividad y funcionalidad para crear soluciones visuales efectivas. Los diseñadores resuelven problemas de comunicación a través del arte y la estética.",
+        averageSalary: "$25,000-80,000 MXN/mes",
+        jobGrowth: "+12% crecimiento",
+        mainAreas: ["Diseño Gráfico", "UX/UI Design", "Diseño Industrial", "Branding", "Diseño Editorial"],
+        dailyActivities: ["Crear conceptos visuales", "Usar software de diseño", "Presentar propuestas", "Colaborar con clientes", "Investigar tendencias"],
+        workEnvironments: ["Agencias de publicidad", "Freelance", "Empresas tecnológicas", "Estudios de diseño"],
+        personalityTraits: ["Creatividad", "Atención al detalle", "Comunicación visual", "Adaptabilidad", "Pensamiento innovador"],
+        hardSkills: [
+            Skill(name: "Adobe Creative Suite", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Teoría del Color", importance: 0.8, importanceLevel: "Alto"),
+            Skill(name: "Tipografía", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        softSkills: [
+            Skill(name: "Creatividad", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Comunicación Visual", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Gestión de Proyectos", importance: 0.75, importanceLevel: "Alto")
+        ],
+        skillDevelopment: [
+            SkillDevelopment(title: "Portfolio", description: "Construye un portafolio sólido", methods: ["Proyectos personales", "Prácticas"])
+        ],
+        academicPath: [
+            AcademicStep(title: "Licenciatura en Diseño", description: "4 años de formación en diseño", duration: "4 años")
+        ],
+        careerProgression: [
+            CareerStage(title: "Diseñador Junior", description: "Proyectos básicos de diseño", salaryRange: "$15,000-25,000", responsibilities: ["Diseños simples"])
+        ],
+        recommendedCourses: [
+            Course(title: "Diseño Gráfico Fundamentals", provider: "Domestika", duration: "2 meses", level: "Básico", isFree: false)
+        ],
+        recommendedBooks: [
+            Book(title: "Diseño para el Mundo Real", author: "Victor Papanek", description: "Filosofía y responsabilidad del diseño")
+        ],
+        professionalOrgs: [
+            ProfessionalOrganization(name: "ADG México", description: "Asociación de diseñadores gráficos", benefits: ["Networking", "Talleres"])
+        ]
+    )
+    
+    static let tecnologia = CareerDetail(
+        title: "Tecnología",
+        subtitle: "Innovación Digital",
+        icon: "laptopcomputer",
+        color: .pink,
+        description: "La tecnología impulsa la innovación digital en todas las industrias. Los profesionales tech crean soluciones software que transforman la manera en que vivimos y trabajamos.",
+        averageSalary: "$40,000-120,000 MXN/mes",
+        jobGrowth: "+15% crecimiento",
+        mainAreas: ["Desarrollo de Software", "Ciencia de Datos", "Ciberseguridad", "Inteligencia Artificial", "DevOps"],
+        dailyActivities: ["Programar aplicaciones", "Resolver problemas técnicos", "Colaborar en equipo", "Optimizar sistemas", "Aprender nuevas tecnologías"],
+        workEnvironments: ["Startups tecnológicas", "Grandes empresas tech", "Consultoría", "Trabajo remoto", "Freelance"],
+        personalityTraits: ["Lógica y análisis", "Persistencia", "Aprendizaje continuo", "Resolución de problemas", "Trabajo en equipo"],
+        hardSkills: [
+            Skill(name: "Programación", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Bases de Datos", importance: 0.85, importanceLevel: "Muy Alto"),
+            Skill(name: "Algoritmos", importance: 0.9, importanceLevel: "Crítico")
+        ],
+        softSkills: [
+            Skill(name: "Resolución de problemas", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Comunicación técnica", importance: 0.8, importanceLevel: "Alto"),
+            Skill(name: "Adaptabilidad", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        skillDevelopment: [
+            SkillDevelopment(title: "Coding Practice", description: "Practica programación diariamente", methods: ["Proyectos", "GitHub", "Hackathons"])
+        ],
+        academicPath: [
+            AcademicStep(title: "Ingeniería en Sistemas", description: "4-5 años de formación técnica", duration: "4-5 años")
+        ],
+        careerProgression: [
+            CareerStage(title: "Developer Junior", description: "Programación de funcionalidades básicas", salaryRange: "$25,000-40,000", responsibilities: ["Código básico", "Testing"])
+        ],
+        recommendedCourses: [
+            Course(title: "Python para Todos", provider: "Coursera", duration: "3 meses", level: "Básico", isFree: true)
+        ],
+        recommendedBooks: [
+            Book(title: "Clean Code", author: "Robert Martin", description: "Mejores prácticas de programación")
+        ],
+        professionalOrgs: [
+            ProfessionalOrganization(name: "Software Guru", description: "Comunidad tecnológica mexicana", benefits: ["Eventos", "Networking", "Conferencias"])
+        ]
+    )
+    
+    static let negocios = CareerDetail(
+        title: "Negocios",
+        subtitle: "Emprendimiento",
+        icon: "building.columns.fill",
+        color: .orange,
+        description: "Los negocios se enfocan en crear, desarrollar y gestionar organizaciones exitosas. Incluye estrategia, finanzas, marketing y liderazgo empresarial.",
+        averageSalary: "$35,000-100,000 MXN/mes",
+        jobGrowth: "+10% crecimiento",
+        mainAreas: ["Administración", "Marketing", "Finanzas", "Recursos Humanos", "Emprendimiento"],
+        dailyActivities: ["Desarrollar estrategias", "Analizar mercados", "Gestionar equipos", "Negociar acuerdos", "Planificar presupuestos"],
+        workEnvironments: ["Corporativos", "Startups", "Consultoría", "Gobierno", "Emprendimiento propio"],
+        personalityTraits: ["Liderazgo", "Visión estratégica", "Comunicación", "Toma de decisiones", "Orientación a resultados"],
+        hardSkills: [
+            Skill(name: "Análisis Financiero", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Marketing Digital", importance: 0.8, importanceLevel: "Alto"),
+            Skill(name: "Gestión de Proyectos", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        softSkills: [
+            Skill(name: "Liderazgo", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Negociación", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Comunicación", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        skillDevelopment: [
+            SkillDevelopment(title: "Experiencia práctica", description: "Desarrolla habilidades empresariales", methods: ["Prácticas", "Proyectos", "Emprendimiento"])
+        ],
+        academicPath: [
+            AcademicStep(title: "Licenciatura en Administración", description: "4 años de formación empresarial", duration: "4 años")
+        ],
+        careerProgression: [
+            CareerStage(title: "Analista Junior", description: "Análisis y soporte empresarial", salaryRange: "$20,000-35,000", responsibilities: ["Análisis", "Reportes"])
+        ],
+        recommendedCourses: [
+            Course(title: "Fundamentos de Marketing", provider: "Google Digital Garage", duration: "2 meses", level: "Básico", isFree: true)
+        ],
+        recommendedBooks: [
+            Book(title: "Good to Great", author: "Jim Collins", description: "Principios de empresas exitosas")
+        ],
+        professionalOrgs: [
+            ProfessionalOrganization(name: "COPARMEX", description: "Confederación Patronal", benefits: ["Networking", "Capacitación"])
+        ]
+    )
+    
+    static let relacionesInternacionales = CareerDetail(
+        title: "Relaciones Internacionales",
+        subtitle: "Diplomacia",
+        icon: "globe.americas.fill",
+        color: .mint,
+        description: "Las relaciones internacionales estudian las interacciones entre países, organizaciones internacionales y actores globales para promover la cooperación y resolver conflictos.",
+        averageSalary: "$30,000-85,000 MXN/mes",
+        jobGrowth: "+6% crecimiento",
+        mainAreas: ["Diplomacia", "Comercio Internacional", "Organismos Internacionales", "ONGs", "Análisis Político"],
+        dailyActivities: ["Analizar situaciones geopolíticas", "Negociar acuerdos", "Redactar informes", "Participar en conferencias", "Coordinar proyectos internacionales"],
+        workEnvironments: ["Embajadas", "Ministerios", "Organismos internacionales", "ONGs", "Empresas multinacionales"],
+        personalityTraits: ["Visión global", "Diplomacia", "Multiculturalidad", "Análisis crítico", "Comunicación intercultural"],
+        hardSkills: [
+            Skill(name: "Análisis Geopolítico", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Idiomas", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Derecho Internacional", importance: 0.8, importanceLevel: "Alto")
+        ],
+        softSkills: [
+            Skill(name: "Diplomacia", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Negociación", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Comunicación intercultural", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        skillDevelopment: [
+            SkillDevelopment(title: "Experiencia internacional", description: "Desarrolla perspectiva global", methods: ["Intercambios", "Voluntariado", "Simulacros"])
+        ],
+        academicPath: [
+            AcademicStep(title: "Licenciatura en Relaciones Internacionales", description: "4 años de formación diplomática", duration: "4 años")
+        ],
+        careerProgression: [
+            CareerStage(title: "Analista Internacional", description: "Análisis de asuntos globales", salaryRange: "$20,000-35,000", responsibilities: ["Investigación", "Reportes"])
+        ],
+        recommendedCourses: [
+            Course(title: "Introducción a las Relaciones Internacionales", provider: "edX - UC3M", duration: "6 semanas", level: "Básico", isFree: true)
+        ],
+        recommendedBooks: [
+            Book(title: "Diplomacy", author: "Henry Kissinger", description: "Historia y arte de la diplomacia")
+        ],
+        professionalOrgs: [
+            ProfessionalOrganization(name: "AMEI", description: "Asociación Mexicana de Estudios Internacionales", benefits: ["Conferencias", "Networking"])
+        ]
+    )
+    
+    static let ingenieria = CareerDetail(
+        title: "Ingenierías",
+        subtitle: "Construcción y Desarrollo",
+        icon: "gearshape.fill",
+        color: .green,
+        description: "Las ingenierías aplican principios científicos y matemáticos para diseñar, construir y mantener estructuras, sistemas y procesos que mejoran la vida humana.",
+        averageSalary: "$35,000-95,000 MXN/mes",
+        jobGrowth: "+11% crecimiento",
+        mainAreas: ["Ingeniería Civil", "Ingeniería Industrial", "Ingeniería Mecánica", "Ingeniería Eléctrica", "Ingeniería Química"],
+        dailyActivities: ["Diseñar sistemas", "Realizar cálculos", "Supervisar proyectos", "Resolver problemas técnicos", "Trabajar con equipos"],
+        workEnvironments: ["Empresas constructoras", "Industria manufacturera", "Consultoría", "Gobierno", "Investigación"],
+        personalityTraits: ["Pensamiento lógico", "Precisión", "Creatividad técnica", "Trabajo en equipo", "Orientación a detalles"],
+        hardSkills: [
+            Skill(name: "Matemáticas", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "CAD/Diseño", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Física Aplicada", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        softSkills: [
+            Skill(name: "Resolución de problemas", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Gestión de proyectos", importance: 0.85, importanceLevel: "Muy Alto"),
+            Skill(name: "Trabajo en equipo", importance: 0.8, importanceLevel: "Alto")
+        ],
+        skillDevelopment: [
+            SkillDevelopment(title: "Práctica técnica", description: "Desarrolla habilidades de ingeniería", methods: ["Laboratorios", "Proyectos", "Prácticas"])
+        ],
+        academicPath: [
+            AcademicStep(title: "Ingeniería (especialidad)", description: "4-5 años de formación técnica", duration: "4-5 años")
+        ],
+        careerProgression: [
+            CareerStage(title: "Ingeniero Junior", description: "Proyectos técnicos básicos", salaryRange: "$25,000-40,000", responsibilities: ["Diseño", "Análisis"])
+        ],
+        recommendedCourses: [
+            Course(title: "Fundamentos de Ingeniería", provider: "MIT OpenCourseWare", duration: "3 meses", level: "Básico", isFree: true)
+        ],
+        recommendedBooks: [
+            Book(title: "Introduction to Engineering", author: "Paul Wright", description: "Fundamentos de la ingeniería moderna")
+        ],
+        professionalOrgs: [
+            ProfessionalOrganization(name: "Colegio de Ingenieros", description: "Asociación profesional de ingenieros", benefits: ["Certificación", "Actualización"])
+        ]
+    )
+    
+    static let humanidades = CareerDetail(
+        title: "Humanidades",
+        subtitle: "Literatura y Filosofía",
+        icon: "book",
+        color: .yellow,
+        description: "Las humanidades estudian la cultura humana, incluyendo literatura, filosofía, historia y artes, para comprender la experiencia y expresión humana a través del tiempo.",
+        averageSalary: "$20,000-60,000 MXN/mes",
+        jobGrowth: "+3% crecimiento",
+        mainAreas: ["Literatura", "Filosofía", "Historia", "Lenguas", "Crítica Cultural"],
+        dailyActivities: ["Investigar textos", "Escribir ensayos", "Enseñar", "Analizar obras", "Participar en debates"],
+        workEnvironments: ["Universidades", "Museos", "Editoriales", "Medios de comunicación", "Instituciones culturales"],
+        personalityTraits: ["Pensamiento crítico", "Curiosidad intelectual", "Comunicación escrita", "Análisis profundo", "Sensibilidad cultural"],
+        hardSkills: [
+            Skill(name: "Investigación", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Escritura académica", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Análisis textual", importance: 0.85, importanceLevel: "Muy Alto")
+        ],
+        softSkills: [
+            Skill(name: "Pensamiento crítico", importance: 0.95, importanceLevel: "Crítico"),
+            Skill(name: "Comunicación", importance: 0.9, importanceLevel: "Crítico"),
+            Skill(name: "Empatía cultural", importance: 0.8, importanceLevel: "Alto")
+        ],
+        skillDevelopment: [
+            SkillDevelopment(title: "Lectura crítica", description: "Desarrolla análisis profundo", methods: ["Lectura extensiva", "Seminarios", "Escritura"])
+        ],
+        academicPath: [
+            AcademicStep(title: "Licenciatura en Humanidades", description: "4 años de formación humanística", duration: "4 años")
+        ],
+        careerProgression: [
+            CareerStage(title: "Investigador Junior", description: "Investigación y análisis cultural", salaryRange: "$15,000-25,000", responsibilities: ["Investigación", "Escritura"])
+        ],
+        recommendedCourses: [
+            Course(title: "Introducción a la Filosofía", provider: "Universidad de Edimburgo", duration: "4 semanas", level: "Básico", isFree: true)
+        ],
+        recommendedBooks: [
+            Book(title: "Las Humanidades en el Siglo XXI", author: "Martha Nussbaum", description: "Importancia de las humanidades hoy")
+        ],
+        professionalOrgs: [
+            ProfessionalOrganization(name: "Academia Mexicana de la Lengua", description: "Institución de estudios lingüísticos", benefits: ["Investigación", "Publicaciones"])
+        ]
+    )
 }
 
 #Preview {
