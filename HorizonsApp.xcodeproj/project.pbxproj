@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5A97B9682E518E9E008E99B9 /* requirements.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A97B9672E518E96008E99B9 /* requirements.txt */; };
+		5A97B9CA2E526D85008E99B9 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5A97B9C92E526D7C008E99B9 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +33,7 @@
 		5A97B8FE2E511D9C008E99B9 /* HorizonsAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HorizonsAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A97B9082E511D9C008E99B9 /* HorizonsAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HorizonsAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A97B9672E518E96008E99B9 /* requirements.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
+		5A97B9C92E526D7C008E99B9 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -95,6 +97,7 @@
 		5A97B8E82E511D9B008E99B9 = {
 			isa = PBXGroup;
 			children = (
+				5A97B9C92E526D7C008E99B9 /* README.md */,
 				5A97B9672E518E96008E99B9 /* requirements.txt */,
 				5A97B9632E516AD4008E99B9 /* Features */,
 				5A97B95B2E514CE7008E99B9 /* Shared */,
@@ -239,6 +242,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A97B9CA2E526D85008E99B9 /* README.md in Resources */,
 				5A97B9682E518E9E008E99B9 /* requirements.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
