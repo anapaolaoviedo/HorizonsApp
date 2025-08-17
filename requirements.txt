@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+redis
+spacy
+python-dotenv
+psycopg2-binary
+openai
+python-multipart

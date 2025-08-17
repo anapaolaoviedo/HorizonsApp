@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5A97B9682E518E9E008E99B9 /* requirements.txt in Resources */ = {isa = PBXBuildFile; fileRef = 5A97B9672E518E96008E99B9 /* requirements.txt */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		5A97B8FF2E511D9C008E99B9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		5A97B8F12E511D9B008E99B9 /* HorizonsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HorizonsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A97B8FE2E511D9C008E99B9 /* HorizonsAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HorizonsAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A97B9082E511D9C008E99B9 /* HorizonsAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HorizonsAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5A97B9672E518E96008E99B9 /* requirements.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = requirements.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,6 +48,21 @@
 		5A97B90B2E511D9C008E99B9 /* HorizonsAppUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = HorizonsAppUITests;
+			sourceTree = "<group>";
+		};
+		5A97B9512E514960008E99B9 /* backend */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = backend;
+			sourceTree = "<group>";
+		};
+		5A97B95B2E514CE7008E99B9 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		5A97B9632E516AD4008E99B9 /* Features */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Features;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +95,10 @@
 		5A97B8E82E511D9B008E99B9 = {
 			isa = PBXGroup;
 			children = (
+				5A97B9672E518E96008E99B9 /* requirements.txt */,
+				5A97B9632E516AD4008E99B9 /* Features */,
+				5A97B95B2E514CE7008E99B9 /* Shared */,
+				5A97B9512E514960008E99B9 /* backend */,
 				5A97B8F32E511D9B008E99B9 /* HorizonsApp */,
 				5A97B9012E511D9C008E99B9 /* HorizonsAppTests */,
 				5A97B90B2E511D9C008E99B9 /* HorizonsAppUITests */,
@@ -109,6 +133,9 @@
 			);
 			fileSystemSynchronizedGroups = (
 				5A97B8F32E511D9B008E99B9 /* HorizonsApp */,
+				5A97B9512E514960008E99B9 /* backend */,
+				5A97B95B2E514CE7008E99B9 /* Shared */,
+				5A97B9632E516AD4008E99B9 /* Features */,
 			);
 			name = HorizonsApp;
 			packageProductDependencies = (
@@ -212,6 +239,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A97B9682E518E9E008E99B9 /* requirements.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
