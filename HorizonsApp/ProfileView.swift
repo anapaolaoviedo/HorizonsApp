@@ -332,7 +332,7 @@ struct ProfileView: View {
             VStack(spacing: 20) {
                 // Header
                 VStack(spacing: 8) {
-                    Text("📚 Biblioteca de Carreras")
+                    Text("Biblioteca de Carreras")
                         .font(.largeTitle.bold())
                         .foregroundColor(.white)
                     
@@ -372,7 +372,7 @@ struct ProfileView: View {
                         icon: "laptopcomputer",
                         title: "Tecnología",
                         subtitle: "Innovación Digital",
-                        color: .green,
+                        color: .pink,
                         courses: 20
                     )
                     
@@ -390,6 +390,22 @@ struct ProfileView: View {
                         subtitle: "Diplomacia",
                         color: .mint,
                         courses: 6
+                    )
+                    
+                    CareerCard(
+                        icon: "scale.3d",
+                        title: "Ingenierias y Ciencias",
+                        subtitle: "Construcción y desarrollo ",
+                        color: .green,
+                        courses: 7
+                    )
+                    
+                    CareerCard(
+                        icon: "book",
+                        title: "Humanidades",
+                        subtitle: "Literatura y Filosofía",
+                        color: .yellow,
+                        courses: 7
                     )
                 }
                 
@@ -930,9 +946,9 @@ class ProfileViewModel: ObservableObject {
             self.decisionReadiness = 0.25
             
             self.gamesPlayed = 1
-            self.careersExplored = 3
+            self.careersExplored = 1
             self.totalTimeSpent = "1.2h"
-            self.currentStreak = 5
+            self.currentStreak = 0
             self.memberSince = "Agosto 2025"
         }
     }
