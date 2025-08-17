@@ -5,6 +5,7 @@ struct ProfileView: View {
     @AppStorage("isLoggedIn") private var isLoggedIn = false
     @State private var selectedTab: ProfileTab = .dashboard
     @State private var showingLogoutAlert = false
+    @State private var showingMUNGame = false
     
     var body: some View {
         NavigationView {
@@ -52,6 +53,9 @@ struct ProfileView: View {
         } message: {
             Text("¿Estás seguro que quieres cerrar sesión?")
         }
+        .sheet(isPresented: $showingMUNGame) {  // ← AGREGAR AQUÍ
+                    MUNGameView()
+                }
     }
     
     // MARK: - Header
@@ -420,7 +424,8 @@ struct ProfileView: View {
                         icon: "globe.americas.fill",
                         difficulty: "Intermedio",
                         duration: "15 min",
-                        players: "1.2k jugadores"
+                        players: "1.2k jugadores",
+                        showingMUNGame: $showingMUNGame
                     )
                     
                     // Coming soon
@@ -734,10 +739,11 @@ struct FeaturedGameCard: View {
     let difficulty: String
     let duration: String
     let players: String
+    @Binding var showingMUNGame: Bool
     
     var body: some View {
         VStack(spacing: 16) {
-            // Header
+            // Header - ESTO FALTABA
             HStack {
                 Image(systemName: icon)
                     .font(.title)
@@ -766,13 +772,13 @@ struct FeaturedGameCard: View {
                 Spacer()
             }
             
-            // Description
+            // Description - ESTO TAMBIÉN FALTABA
             Text(description)
                 .font(.callout)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.leading)
             
-            // Stats
+            // Stats - Y ESTO TAMBIÉN
             HStack {
                 Label(difficulty, systemImage: "star.fill")
                     .font(.caption)
@@ -789,9 +795,9 @@ struct FeaturedGameCard: View {
                     .foregroundColor(.secondary)
             }
             
-            // Play button
+            // Play button - ESTE YA LO TENÍAS
             Button(action: {
-                // TODO: Start game
+                showingMUNGame = true
             }) {
                 Text("🚀 Jugar Ahora")
                     .font(.headline.bold())
