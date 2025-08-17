@@ -6,58 +6,58 @@ struct ProfileView: View {
     @State private var selectedTab: ProfileTab = .dashboard
     @State private var showingLogoutAlert = false
     @State private var showingMUNGame = false
-    
+    @State private var goToChat = false   // 👈 navigation trigger
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 // YOUR BEAUTIFUL GRADIENT BACKGROUND
                 LinearGradient(colors: [.horizonLightGreen, .horizonMint],
                                startPoint: .topLeading, endPoint: .bottomTrailing)
                 .ignoresSafeArea()
-                
+
                 VStack(spacing: 0) {
                     // Custom Header
                     headerView
-                    
+
                     // Content
                     TabView(selection: $selectedTab) {
                         dashboardContent
                             .tag(ProfileTab.dashboard)
-                        
+
                         socratContent
                             .tag(ProfileTab.socrat)
-                        
+
                         resourcesContent
                             .tag(ProfileTab.resources)
-                        
+
                         gamesContent
                             .tag(ProfileTab.games)
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    
+
                     // Custom Tab Bar
                     customTabBar
                 }
             }
+            .navigationDestination(isPresented: $goToChat) {   // 👈 destination for chat
+                ChatScreen()
+            }
+            .toolbar(.hidden, for: .navigationBar)  // replaces .navigationBarHidden in NavigationStack
         }
-        .navigationBarHidden(true)
-        .onAppear {
-            viewModel.loadUserData()
-        }
+        .onAppear { viewModel.loadUserData() }
         .alert("Cerrar Sesión", isPresented: $showingLogoutAlert) {
             Button("Cancelar", role: .cancel) { }
             Button("Cerrar Sesión", role: .destructive) {
                 viewModel.logout()
                 isLoggedIn = false
             }
-        } message: {
-            Text("¿Estás seguro que quieres cerrar sesión?")
+        } message: { Text("¿Estás seguro que quieres cerrar sesión?") }
+        .sheet(isPresented: $showingMUNGame) {
+            MUNGameView()
         }
-        .sheet(isPresented: $showingMUNGame) {  // ← AGREGAR AQUÍ
-                    MUNGameView()
-                }
     }
-    
+
     // MARK: - Header
     private var headerView: some View {
         VStack(spacing: 16) {
@@ -67,24 +67,22 @@ struct ProfileView: View {
                     Image(systemName: "compass.drawing")
                         .font(.title2)
                         .foregroundColor(.white)
-                    
+
                     Text("Horizons")
                         .font(.title2.bold())
                         .foregroundColor(.white)
                 }
-                
+
                 Spacer()
-                
+
                 // Profile button
-                Button {
-                    showingLogoutAlert = true
-                } label: {
+                Button { showingLogoutAlert = true } label: {
                     Image(systemName: "power")
                         .font(.title3)
                         .foregroundColor(.white.opacity(0.8))
                 }
             }
-            
+
             // User info card
             HStack(spacing: 12) {
                 // Avatar
@@ -96,25 +94,25 @@ struct ProfileView: View {
                             .font(.title2.bold())
                             .foregroundColor(.white)
                     )
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text("¡Hola, \(viewModel.user?.username ?? "Usuario")!")
                         .font(.headline.bold())
                         .foregroundColor(.white)
-                    
+
                     Text("Miembro desde \(viewModel.memberSince ?? "Agosto 2025")")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.8))
                 }
-                
+
                 Spacer()
-                
+
                 // Quick stat
                 VStack(spacing: 2) {
                     Text("\(viewModel.currentStreak)")
                         .font(.title2.bold())
                         .foregroundColor(.white)
-                    
+
                     Text("días")
                         .font(.caption2)
                         .foregroundColor(.white.opacity(0.8))
@@ -127,29 +125,29 @@ struct ProfileView: View {
         }
         .padding()
     }
-    
+
     // MARK: - Dashboard Content
     private var dashboardContent: some View {
         ScrollView {
             VStack(spacing: 20) {
                 // Progress overview
                 progressOverview
-                
+
                 // Life bars
                 lifeBarsSection
-                
+
                 // Quick actions
                 quickActionsSection
-                
+
                 // Recent achievements
                 recentAchievementsSection
-                
+
                 Spacer(minLength: 100) // Space for tab bar
             }
             .padding()
         }
     }
-    
+
     // MARK: - Progress Overview
     private var progressOverview: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
@@ -160,7 +158,7 @@ struct ProfileView: View {
                 color: .blue,
                 subtitle: "completados"
             )
-            
+
             ProgressCard(
                 title: "Carreras",
                 value: "\(viewModel.careersExplored)",
@@ -168,7 +166,7 @@ struct ProfileView: View {
                 color: .green,
                 subtitle: "exploradas"
             )
-            
+
             ProgressCard(
                 title: "Tiempo",
                 value: viewModel.totalTimeSpent,
@@ -176,7 +174,7 @@ struct ProfileView: View {
                 color: .orange,
                 subtitle: "invertido"
             )
-            
+
             ProgressCard(
                 title: "Nivel",
                 value: "Novato",
@@ -186,14 +184,14 @@ struct ProfileView: View {
             )
         }
     }
-    
+
     // MARK: - Life Bars Section
     private var lifeBarsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("📊 Tu Progreso Vocacional")
                 .font(.headline.bold())
                 .foregroundColor(.horizonLicorice)
-            
+
             VStack(spacing: 12) {
                 LifeBar(label: "Exploración", value: viewModel.explorationProgress, color: .blue)
                 LifeBar(label: "Autoconocimiento", value: viewModel.selfKnowledgeProgress, color: .green)
@@ -206,14 +204,14 @@ struct ProfileView: View {
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
-    
+
     // MARK: - Quick Actions
     private var quickActionsSection: some View {
         VStack(spacing: 16) {
             Text("🚀 Acciones Rápidas")
                 .font(.headline.bold())
                 .foregroundColor(.horizonLicorice)
-            
+
             VStack(spacing: 12) {
                 QuickActionButton(
                     title: "Jugar MUN Simulator",
@@ -222,7 +220,7 @@ struct ProfileView: View {
                     color: .blue,
                     action: { selectedTab = .games }
                 )
-                
+
                 QuickActionButton(
                     title: "Hablar con Socrat",
                     subtitle: "Obtén orientación IA",
@@ -230,7 +228,7 @@ struct ProfileView: View {
                     color: .purple,
                     action: { selectedTab = .socrat }
                 )
-                
+
                 QuickActionButton(
                     title: "Explorar Carreras",
                     subtitle: "Descubre nuevas opciones",
@@ -245,14 +243,14 @@ struct ProfileView: View {
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
-    
+
     // MARK: - Recent Achievements
     private var recentAchievementsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("🏆 Logros Recientes")
                 .font(.headline.bold())
                 .foregroundColor(.horizonLicorice)
-            
+
             VStack(spacing: 12) {
                 AchievementRow(
                     icon: "star.fill",
@@ -261,7 +259,7 @@ struct ProfileView: View {
                     color: .yellow,
                     isNew: true
                 )
-                
+
                 AchievementRow(
                     icon: "flame.fill",
                     title: "Racha de 5 días",
@@ -276,7 +274,7 @@ struct ProfileView: View {
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
-    
+
     // MARK: - Socrat Content
     private var socratContent: some View {
         ScrollView {
@@ -286,23 +284,25 @@ struct ProfileView: View {
                     Text("🧠 Socrat IA")
                         .font(.largeTitle.bold())
                         .foregroundColor(.white)
-                    
+
                     Text("Tu asistente de orientación vocacional")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.8))
                 }
                 .padding(.top, 20)
-                
+
                 // Socrat features
                 VStack(spacing: 16) {
+                    // Chat → triggers navigation
                     SocratFeatureCard(
                         icon: "bubble.left.and.bubble.right.fill",
                         title: "Chat Vocacional",
                         description: "Conversa sobre tus intereses y recibe orientación personalizada",
                         action: "Iniciar Chat",
-                        isAvailable: true
+                        isAvailable: true,
+                        onTap: { goToChat = true }   // 👈 push ChatScreen
                     )
-                    
+
                     SocratFeatureCard(
                         icon: "lightbulb.fill",
                         title: "Recomendaciones IA",
@@ -310,7 +310,7 @@ struct ProfileView: View {
                         action: "Ver Recomendaciones",
                         isAvailable: true
                     )
-                    
+
                     SocratFeatureCard(
                         icon: "chart.line.uptrend.xyaxis",
                         title: "Análisis Predictivo",
@@ -319,13 +319,13 @@ struct ProfileView: View {
                         isAvailable: false
                     )
                 }
-                
+
                 Spacer(minLength: 100)
             }
             .padding()
         }
     }
-    
+
     // MARK: - Resources Content
     private var resourcesContent: some View {
         ScrollView {
@@ -335,86 +335,31 @@ struct ProfileView: View {
                     Text("Biblioteca de Carreras")
                         .font(.largeTitle.bold())
                         .foregroundColor(.white)
-                    
+
                     Text("Explora el mundo profesional")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.8))
                 }
                 .padding(.top, 20)
-                
+
                 // Career categories
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 16) {
-                    CareerCard(
-                        icon: "stethoscope",
-                        title: "Medicina",
-                        subtitle: "Ciencias de la Salud",
-                        color: .red,
-                        courses: 12
-                    )
-                    
-                    CareerCard(
-                        icon: "scale.3d",
-                        title: "Derecho",
-                        subtitle: "Justicia y Leyes",
-                        color: .blue,
-                        courses: 8
-                    )
-                    
-                    CareerCard(
-                        icon: "paintbrush.fill",
-                        title: "Diseño",
-                        subtitle: "Arte y Creatividad",
-                        color: .purple,
-                        courses: 15
-                    )
-                    
-                    CareerCard(
-                        icon: "laptopcomputer",
-                        title: "Tecnología",
-                        subtitle: "Innovación Digital",
-                        color: .pink,
-                        courses: 20
-                    )
-                    
-                    CareerCard(
-                        icon: "building.columns.fill",
-                        title: "Negocios",
-                        subtitle: "Emprendimiento",
-                        color: .orange,
-                        courses: 10
-                    )
-                    
-                    CareerCard(
-                        icon: "globe.americas.fill",
-                        title: "Rel. Int.",
-                        subtitle: "Diplomacia",
-                        color: .mint,
-                        courses: 6
-                    )
-                    
-                    CareerCard(
-                        icon: "scale.3d",
-                        title: "Ingenierias y Ciencias",
-                        subtitle: "Construcción y desarrollo ",
-                        color: .green,
-                        courses: 7
-                    )
-                    
-                    CareerCard(
-                        icon: "book",
-                        title: "Humanidades",
-                        subtitle: "Literatura y Filosofía",
-                        color: .yellow,
-                        courses: 7
-                    )
+                    CareerCard(icon: "stethoscope", title: "Medicina", subtitle: "Ciencias de la Salud", color: .red,   courses: 12)
+                    CareerCard(icon: "scale.3d",    title: "Derecho",  subtitle: "Justicia y Leyes",       color: .blue,  courses: 8)
+                    CareerCard(icon: "paintbrush.fill", title: "Diseño", subtitle: "Arte y Creatividad", color: .purple, courses: 15)
+                    CareerCard(icon: "laptopcomputer",  title: "Tecnología", subtitle: "Innovación Digital", color: .pink, courses: 20)
+                    CareerCard(icon: "building.columns.fill", title: "Negocios", subtitle: "Emprendimiento", color: .orange, courses: 10)
+                    CareerCard(icon: "globe.americas.fill", title: "Rel. Int.", subtitle: "Diplomacia", color: .mint, courses: 6)
+                    CareerCard(icon: "scale.3d", title: "Ingenierias y Ciencias", subtitle: "Construcción y desarrollo ", color: .green, courses: 7)
+                    CareerCard(icon: "book", title: "Humanidades", subtitle: "Literatura y Filosofía", color: .yellow, courses: 7)
                 }
-                
+
                 Spacer(minLength: 100)
             }
             .padding()
         }
     }
-    
+
     // MARK: - Games Content
     private var gamesContent: some View {
         ScrollView {
@@ -424,13 +369,13 @@ struct ProfileView: View {
                     Text("🎮 Career Games")
                         .font(.largeTitle.bold())
                         .foregroundColor(.white)
-                    
+
                     Text("Aprende jugando")
                         .font(.subheadline)
                         .foregroundColor(.white.opacity(0.8))
                 }
                 .padding(.top, 20)
-                
+
                 // Featured game
                 VStack(spacing: 16) {
                     FeaturedGameCard(
@@ -443,49 +388,29 @@ struct ProfileView: View {
                         players: "1.2k jugadores",
                         showingMUNGame: $showingMUNGame
                     )
-                    
+
                     // Coming soon
                     Text("🔜 Próximos Juegos")
                         .font(.headline.bold())
                         .foregroundColor(.white)
                         .padding(.top, 20)
-                    
-                    ComingSoonGameCard(
-                        title: "Lab Virtual",
-                        subtitle: "Ciencias",
-                        icon: "flask.fill",
-                        color: .green
-                    )
-                    
-                    ComingSoonGameCard(
-                        title: "Sala de Tribunal",
-                        subtitle: "Derecho",
-                        icon: "scale.3d",
-                        color: .blue
-                    )
-                    
-                    ComingSoonGameCard(
-                        title: "Startup Simulator",
-                        subtitle: "Negocios",
-                        icon: "building.2.fill",
-                        color: .orange
-                    )
+
+                    ComingSoonGameCard(title: "Lab Virtual",    subtitle: "Ciencias",         icon: "flask.fill",        color: .green)
+                    ComingSoonGameCard(title: "Sala de Tribunal", subtitle: "Derecho",        icon: "scale.3d",         color: .blue)
+                    ComingSoonGameCard(title: "Startup Simulator", subtitle: "Negocios",     icon: "building.2.fill",  color: .orange)
                 }
-                
+
                 Spacer(minLength: 100)
             }
             .padding()
         }
     }
-    
+
     // MARK: - Custom Tab Bar
     private var customTabBar: some View {
         HStack {
             ForEach(ProfileTab.allCases, id: \.self) { tab in
-                TabBarButton(
-                    tab: tab,
-                    selectedTab: $selectedTab
-                )
+                TabBarButton(tab: tab, selectedTab: $selectedTab)
             }
         }
         .padding(.horizontal)
@@ -504,22 +429,22 @@ struct ProfileView: View {
 
 enum ProfileTab: CaseIterable {
     case dashboard, socrat, resources, games
-    
+
     var icon: String {
         switch self {
         case .dashboard: return "person.circle.fill"
-        case .socrat: return "brain.head.profile"
+        case .socrat:    return "brain.head.profile"
         case .resources: return "books.vertical.fill"
-        case .games: return "gamecontroller.fill"
+        case .games:     return "gamecontroller.fill"
         }
     }
-    
+
     var title: String {
         switch self {
         case .dashboard: return "Perfil"
-        case .socrat: return "Socrat"
+        case .socrat:    return "Socrat"
         case .resources: return "Recursos"
-        case .games: return "Juegos"
+        case .games:     return "Juegos"
         }
     }
 }
@@ -527,7 +452,7 @@ enum ProfileTab: CaseIterable {
 struct TabBarButton: View {
     let tab: ProfileTab
     @Binding var selectedTab: ProfileTab
-    
+
     var body: some View {
         Button {
             selectedTab = tab
@@ -536,7 +461,7 @@ struct TabBarButton: View {
                 Image(systemName: tab.icon)
                     .font(.title3)
                     .foregroundColor(selectedTab == tab ? .blue : .gray)
-                
+
                 Text(tab.title)
                     .font(.caption2)
                     .foregroundColor(selectedTab == tab ? .blue : .gray)
@@ -552,22 +477,22 @@ struct ProgressCard: View {
     let icon: String
     let color: Color
     let subtitle: String
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
-            
+
             Text(value)
                 .font(.title2.bold())
                 .foregroundColor(.horizonLicorice)
-            
+
             VStack(spacing: 2) {
                 Text(title)
                     .font(.caption.bold())
                     .foregroundColor(.horizonLicorice)
-                
+
                 Text(subtitle)
                     .font(.caption2)
                     .foregroundColor(.secondary)
@@ -587,7 +512,7 @@ struct QuickActionButton: View {
     let icon: String
     let color: Color
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: 12) {
@@ -595,19 +520,19 @@ struct QuickActionButton: View {
                     .font(.title2)
                     .foregroundColor(color)
                     .frame(width: 30)
-                
+
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.callout.bold())
                         .foregroundColor(.horizonLicorice)
-                    
+
                     Text(subtitle)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 Spacer()
-                
+
                 Image(systemName: "chevron.right")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -625,20 +550,20 @@ struct AchievementRow: View {
     let description: String
     let color: Color
     let isNew: Bool
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
                 .frame(width: 30)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     Text(title)
                         .font(.callout.bold())
                         .foregroundColor(.horizonLicorice)
-                    
+
                     if isNew {
                         Text("NUEVO")
                             .font(.caption2.bold())
@@ -649,12 +574,12 @@ struct AchievementRow: View {
                             .cornerRadius(4)
                     }
                 }
-                
+
                 Text(description)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
         }
         .padding(.vertical, 4)
@@ -667,31 +592,30 @@ struct SocratFeatureCard: View {
     let description: String
     let action: String
     let isAvailable: Bool
-    
+    var onTap: (() -> Void)? = nil   // 👈 closure to trigger navigation
+
     var body: some View {
         VStack(spacing: 16) {
             HStack {
                 Image(systemName: icon)
                     .font(.title)
                     .foregroundColor(isAvailable ? .blue : .gray)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.headline.bold())
                         .foregroundColor(.horizonLicorice)
-                    
+
                     Text(description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.leading)
                 }
-                
+
                 Spacer()
             }
-            
-            Button(action: {
-                // TODO: Implement
-            }) {
+
+            Button(action: { onTap?() }) {
                 Text(isAvailable ? action : "Próximamente")
                     .font(.callout.bold())
                     .foregroundColor(.white)
@@ -715,22 +639,22 @@ struct CareerCard: View {
     let subtitle: String
     let color: Color
     let courses: Int
-    
+
     var body: some View {
         VStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title)
                 .foregroundColor(color)
-            
+
             VStack(spacing: 4) {
                 Text(title)
                     .font(.headline.bold())
                     .foregroundColor(.horizonLicorice)
-                
+
                 Text(subtitle)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Text("\(courses) recursos")
                     .font(.caption2)
                     .foregroundColor(color)
@@ -756,21 +680,20 @@ struct FeaturedGameCard: View {
     let duration: String
     let players: String
     @Binding var showingMUNGame: Bool
-    
+
     var body: some View {
         VStack(spacing: 16) {
-            // Header - ESTO FALTABA
             HStack {
                 Image(systemName: icon)
                     .font(.title)
                     .foregroundColor(.blue)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(title)
                             .font(.title2.bold())
                             .foregroundColor(.horizonLicorice)
-                        
+
                         Text("NUEVO")
                             .font(.caption2.bold())
                             .foregroundColor(.white)
@@ -779,53 +702,46 @@ struct FeaturedGameCard: View {
                             .background(Color.red)
                             .cornerRadius(4)
                     }
-                    
+
                     Text(subtitle)
                         .font(.subheadline)
                         .foregroundColor(.blue)
                 }
-                
+
                 Spacer()
             }
-            
-            // Description - ESTO TAMBIÉN FALTABA
+
             Text(description)
                 .font(.callout)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.leading)
-            
-            // Stats - Y ESTO TAMBIÉN
+
             HStack {
                 Label(difficulty, systemImage: "star.fill")
                     .font(.caption)
                     .foregroundColor(.orange)
-                
+
                 Label(duration, systemImage: "clock.fill")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 Text(players)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
-            // Play button - ESTE YA LO TENÍAS
-            Button(action: {
-                showingMUNGame = true
-            }) {
+
+            Button(action: { showingMUNGame = true }) {
                 Text("🚀 Jugar Ahora")
                     .font(.headline.bold())
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
                     .background(
-                        LinearGradient(
-                            colors: [.blue, .purple],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
+                        LinearGradient(colors: [.blue, .purple],
+                                       startPoint: .leading,
+                                       endPoint: .trailing)
                     )
                     .cornerRadius(12)
             }
@@ -842,26 +758,26 @@ struct ComingSoonGameCard: View {
     let subtitle: String
     let icon: String
     let color: Color
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color.opacity(0.6))
                 .frame(width: 40)
-            
+
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.callout.bold())
                     .foregroundColor(.horizonLicorice.opacity(0.6))
-                
+
                 Text(subtitle)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             Text("Próximamente")
                 .font(.caption)
                 .foregroundColor(.white)
@@ -882,7 +798,7 @@ struct LifeBar: View {
     let label: String
     let value: Double
     let color: Color
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -912,19 +828,17 @@ class ProfileViewModel: ObservableObject {
     @Published var selfKnowledgeProgress: Double = 0.0
     @Published var alignmentProgress: Double = 0.0
     @Published var decisionReadiness: Double = 0.0
-    
+
     @Published var gamesPlayed: Int = 0
     @Published var careersExplored: Int = 0
     @Published var totalTimeSpent: String = "0h"
     @Published var currentStreak: Int = 0
     @Published var memberSince: String?
-    
+
     @Published var recentActivities: [RecentActivity] = []
-    
-    func loadUserData() {
-        loadMockData()
-    }
-    
+
+    func loadUserData() { loadMockData() }
+
     func logout() {
         user = nil
         explorationProgress = 0.0
@@ -937,14 +851,14 @@ class ProfileViewModel: ObservableObject {
         currentStreak = 0
         recentActivities = []
     }
-    
+
     private func loadMockData() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.explorationProgress = 0.35
             self.selfKnowledgeProgress = 0.50
             self.alignmentProgress = 0.40
             self.decisionReadiness = 0.25
-            
+
             self.gamesPlayed = 1
             self.careersExplored = 1
             self.totalTimeSpent = "1.2h"
